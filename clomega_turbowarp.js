@@ -113,7 +113,7 @@ SOFTWARE.
             return {
                 id: 'clomega',
                 name: 'CLΩ',
-                docsURI: 'https://github.com/MikeDev101/cloudlink-omega/wiki/Client-Extension#clω-blocks',
+                docsURI: 'https://github.com/cloudlink-omega/extension/wiki/Extension',
                 blockIconURI: this.blockIconURI,
                 menuIconURI: this.menuIconURI,
                 color1: "#FF4D4C",
