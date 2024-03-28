@@ -22,15 +22,11 @@ SOFTWARE.
 */
 
 (function (Scratch) {
-    // Modify to point to server. (Set as localhost for testing)
-    const rootApiURL = "https://omega.mikedev101.cc"
-    const rootWsURL = "wss://omega.mikedev101.cc"
-    
     // Define class for authentication
     class OmegaAuth {
         constructor() {
-            this.loginUrl = `${rootApiURL}/api/v0/login`;
-            this.registerUrl = `${rootApiURL}/api/v0/register`;
+            this.rootApiURL = "https://omega.mikedev101.cc";
+            this.rootWsURL = "wss://omega.mikedev101.cc";
             this.registerSuccess = false;
             this.loginSuccess = false;
             this.sessionToken = new String();
@@ -38,7 +34,7 @@ SOFTWARE.
 
         async Login(email, password) {
             try {
-                const response = await fetch(this.loginUrl, {
+                const response = await fetch(`${this.rootApiURL}/api/v0/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -65,7 +61,7 @@ SOFTWARE.
 
         async Register(email, username, password) {
             try {
-                const response = await fetch(this.registerUrl, {
+                const response = await fetch(`${this.rootApiURL}/api/v0/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -139,6 +135,29 @@ SOFTWARE.
                     },
                     "---",
                     {
+                        opcode: 'change_api_url',
+                        blockType: 'command',
+                        text: 'Set [URL] as API server',
+                        arguments: {
+                            URL: {
+                                type: 'string',
+                                defaultValue: 'https://omega.mikedev101.cc/',
+                            },
+                        }
+                    },
+                    {
+                        opcode: 'change_wss_url',
+                        blockType: 'command',
+                        text: 'Set [URL] as Signaling server',
+                        arguments: {
+                            URL: {
+                                type: 'string',
+                                defaultValue: 'wss://omega.mikedev101.cc/',
+                            },
+                        }
+                    },
+                    "---",
+                    {
                         opcode: 'login_account',
                         blockType: 'command',
                         text: 'Login with email: [EMAIL] password: [PASSWORD]',
@@ -187,6 +206,14 @@ SOFTWARE.
             };
         }
 
+        change_api_url({ URL }) {
+            OmegaAuthInstance.rootApiURL = URL;
+        }
+
+        change_wss_url({ URL }) {
+            OmegaAuthInstance.rootWsURL = URL;
+        }
+
         async login_account({ EMAIL, PASSWORD }) {
             await OmegaAuthInstance.Login(EMAIL, PASSWORD);
         }
@@ -209,7 +236,7 @@ SOFTWARE.
         }
 
         build_server_url({UGI}) {
-            let url = new URL(`${rootWsURL}/api/v0/signaling`);
+            let url = new URL(`${OmegaAuthInstance.rootWsURL}/api/v0/signaling`);
             url.searchParams.append('ugi', UGI);
             return url.toString();
         }
