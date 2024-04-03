@@ -2,7 +2,7 @@
 IF YOU ARE READING THIS, PLEASE LOAD THIS EXTENSION UNSANDBOXED!
 
 CloudLink Ω API extension for Scratch 3 (Turbowarp-flavored)
-Copyright (C) 2024 Mike Renaker "MikeDEV".
+Copyright © 2024 Mike Renaker "MikeDEV".
 
 MIT License
 
