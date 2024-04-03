@@ -1,6 +1,10 @@
 /*
+IF YOU ARE READING THIS, PLEASE LOAD THIS EXTENSION UNSANDBOXED!
+
 CloudLink Ω API extension for Scratch 3 (Turbowarp-flavored)
 Copyright (C) 2024 Mike Renaker "MikeDEV".
+
+MIT License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +31,19 @@ SOFTWARE.
         constructor() {
             this.rootApiURL = "https://omega.mikedev101.cc";
             this.rootWsURL = "wss://omega.mikedev101.cc";
+            this.selectedUgi = "01HNPHRWS0N0AYMM5K4HN31V4W"; // Default UGI
             this.registerSuccess = false;
             this.loginSuccess = false;
+            this.saveSuccess = false;
+            this.loadSuccess = false;
             this.sessionToken = new String();
+            this.statusCodes = {
+                register: "",
+                login: "",
+                load: "",
+                save: "",
+            }
+            this.loadedData = "";
         }
 
         async Login(email, password) {
@@ -54,8 +68,65 @@ SOFTWARE.
                     console.warn("Account login failed:", data);
                 }
                 this.loginSuccess = response.ok;
+                this.statusCodes.login = response.status;
             } catch (error) {
                 console.error('Error getting login token:', error);
+            }
+        }
+
+        async Save(save_slot, save_data) {
+            try {
+                const response = await fetch(`${this.rootApiURL}/api/v0/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: this.sessionToken,
+                        ugi: this.selectedUgi,
+                        save_slot,
+                        save_data,
+                    }),
+                });
+
+                const data = await response.text(); // text/plain response. Should be just "OK".
+                if (response.ok) {
+                    console.log("Saved data successfully.");
+                } else {
+                    console.warn("Save failed:", data);
+                }
+                this.saveSuccess = response.ok;
+                this.statusCodes.save = response.status;
+            } catch (error) {
+                console.error('Error saving data:', error);
+            }
+        }
+
+        async Load(save_slot) {
+            try {
+                const response = await fetch(`${this.rootApiURL}/api/v0/load`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: this.sessionToken,
+                        ugi: this.selectedUgi,
+                        save_slot,
+                    }),
+                });
+
+                const data = await response.text(); // text/plain response. Should be just "OK".
+                if (response.ok) {
+                    console.log("Loaded data successfully.");
+                    this.loadedData = data;
+                } else {
+                    console.warn("Load failed:", data);
+                }
+                this.loadSuccess = response.ok;
+                this.statusCodes.load = response.status;
+            } catch (error) {
+                console.error('Error loading data:', error);
             }
         }
 
@@ -81,6 +152,7 @@ SOFTWARE.
                     console.warn("Account registration failed:", data);
                 }
                 this.registerSuccess = (data == 'OK');
+                this.statusCodes.register = response.status;
             } catch (error) {
                 console.error('Error getting response:', error);
                 this.registerSuccess = false;
@@ -117,15 +189,9 @@ SOFTWARE.
                 color3: "#A13332",
                 blocks: [
                     {
-                        opcode: 'get_token',
-                        blockType: 'reporter',
-                        text: 'My session token',
-                    },
-                    "---",
-                    {
-                        opcode: 'build_server_url',
-                        blockType: 'reporter',
-                        text: 'Get game [UGI] server URL',
+                        opcode: 'set_ugi',
+                        blockType: 'command',
+                        text: 'Set [UGI] as this project\'s Unique Game ID (UGI)',
                         arguments: {
                             UGI: {
                                 type: 'string',
@@ -133,30 +199,50 @@ SOFTWARE.
                             },
                         }
                     },
+                    {
+                        opcode: 'build_server_url',
+                        blockType: 'reporter',
+                        text: 'Signaling Server URL with set UGI',
+                    },
                     "---",
                     {
                         opcode: 'change_api_url',
                         blockType: 'command',
-                        text: 'Set [URL] as API server',
+                        text: 'Use [URL] as API Server',
                         arguments: {
                             URL: {
                                 type: 'string',
-                                defaultValue: 'https://omega.mikedev101.cc/',
+                                defaultValue: 'https://omega.mikedev101.cc',
                             },
                         }
                     },
                     {
                         opcode: 'change_wss_url',
                         blockType: 'command',
-                        text: 'Set [URL] as Signaling server',
+                        text: 'Use [URL] as Signaling Server',
                         arguments: {
                             URL: {
                                 type: 'string',
-                                defaultValue: 'wss://omega.mikedev101.cc/',
+                                defaultValue: 'wss://omega.mikedev101.cc',
                             },
                         }
                     },
                     "---",
+                    {
+                        opcode: 'get_token',
+                        blockType: 'reporter',
+                        text: 'Session Token',
+                    },
+                    {
+                        opcode: 'login_status_code',
+                        blockType: 'reporter',
+                        text: 'Login status code',
+                    },
+                    {
+                        opcode: 'was_login_successful',
+                        blockType: 'Boolean',
+                        text: 'Was login successful?',
+                    },
                     {
                         opcode: 'login_account',
                         blockType: 'command',
@@ -172,12 +258,17 @@ SOFTWARE.
                             }
                         }
                     },
-                    {
-                        opcode: 'was_login_successful',
-                        blockType: 'Boolean',
-                        text: 'Was login successful?',
-                    },
                     "---",
+                    {
+                        opcode: 'register_status_code',
+                        blockType: 'reporter',
+                        text: 'Registration status code',
+                    },
+                    {
+                        opcode: 'was_register_successful',
+                        blockType: 'Boolean',
+                        text: 'Was registration successful?',
+                    },
                     {
                         opcode: 'register_account',
                         blockType: 'command',
@@ -197,12 +288,68 @@ SOFTWARE.
                             }
                         }
                     },
+                    "---",
                     {
-                        opcode: 'was_register_successful',
-                        blockType: 'Boolean',
-                        text: 'Was registration successful?',
+                        opcode: 'save_status_code',
+                        blockType: 'reporter',
+                        text: 'Save status code',
                     },
-                ]
+                    {
+                        opcode: 'was_save_successful',
+                        blockType: 'Boolean',
+                        text: 'Was save successful?',
+                    },
+                    {
+                        opcode: 'save_slot',
+                        blockType: 'command',
+                        text: 'Write to save slot [SLOT] with [DATA]',
+                        arguments: {
+                            SLOT: {
+                                type: 'number',
+                                defaultValue: "1",
+                                menu: "SlotMenu",
+                            },
+                            DATA: {
+                                type: 'string',
+                                defaultValue: 'something to save',
+                            },
+                        }
+                    },
+                    "---",
+                    {
+                        opcode: 'load_status_code',
+                        blockType: 'reporter',
+                        text: 'Load status code',
+                    },
+                    {
+                        opcode: 'was_load_successful',
+                        blockType: 'Boolean',
+                        text: 'Was load successful?',
+                    },
+                    {
+                        opcode: 'loaded_slot_data',
+                        blockType: 'reporter',
+                        text: 'Loaded save data',
+                    },
+                    {
+                        opcode: 'load_slot',
+                        blockType: 'command',
+                        text: 'Read from save slot [SLOT]',
+                        arguments: {
+                            SLOT: {
+                                type: 'number',
+                                defaultValue: "1",
+                                menu: "SlotMenu",
+                            },
+                        }
+                    },
+                ],
+                menus: {
+                    SlotMenu: {
+                        acceptReporters: true,
+                        items: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+                    }
+                }
             };
         }
 
@@ -216,6 +363,42 @@ SOFTWARE.
 
         async login_account({ EMAIL, PASSWORD }) {
             await OmegaAuthInstance.Login(EMAIL, PASSWORD);
+        }
+
+        register_status_code() {
+            return OmegaAuthInstance.statusCodes.register;
+        }
+
+        login_status_code() {
+            return OmegaAuthInstance.statusCodes.login;
+        }
+
+        save_status_code() {
+            return OmegaAuthInstance.statusCodes.save;
+        }
+
+        load_status_code() {
+            return OmegaAuthInstance.statusCodes.load;
+        }
+
+        was_save_successful() {
+            return OmegaAuthInstance.saveSuccess;
+        }
+
+        async save_slot({ SLOT, DATA }) {
+            await OmegaAuthInstance.Save(SLOT, DATA);
+        }
+
+        was_load_successful() {
+            return OmegaAuthInstance.loadSuccess;
+        }
+
+        loaded_slot_data() {
+            return OmegaAuthInstance.loadedData;
+        }
+
+        async load_slot({ SLOT }) {
+            await OmegaAuthInstance.Load(SLOT);
         }
 
         was_login_successful() {
@@ -235,10 +418,14 @@ SOFTWARE.
             return OmegaAuthInstance.sessionToken;
         }
 
-        build_server_url({UGI}) {
+        build_server_url() {
             let url = new URL(`${OmegaAuthInstance.rootWsURL}/api/v0/signaling`);
-            url.searchParams.append('ugi', UGI);
+            url.searchParams.append('ugi', OmegaAuthInstance.selectedUgi);
             return url.toString();
+        }
+
+        set_ugi({UGI}) {
+            OmegaAuthInstance.selectedUgi = UGI;
         }
     }
 
