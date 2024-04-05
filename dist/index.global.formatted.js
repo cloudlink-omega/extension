@@ -357,7 +357,7 @@
         return OmegaAuthInstance.saveSuccess;
       }
       async save_slot({ SLOT, DATA }) {
-        await OmegaAuthInstance.Save(SLOT.toString(), DATA.toString());
+        await OmegaAuthInstance.Save(SLOT, DATA.toString());
       }
       was_load_successful() {
         return OmegaAuthInstance.loadSuccess;
@@ -366,7 +366,7 @@
         return OmegaAuthInstance.loadedData;
       }
       async load_slot({ SLOT }) {
-        await OmegaAuthInstance.Load(SLOT.toString());
+        await OmegaAuthInstance.Load(SLOT);
       }
       was_login_successful() {
         return OmegaAuthInstance.loginSuccess;

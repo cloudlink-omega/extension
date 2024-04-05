@@ -98,7 +98,7 @@ SOFTWARE.
       }
     }
 
-    async Save(save_slot: string, save_data: string): Promise<void> {
+    async Save(save_slot: number, save_data: string): Promise<void> {
       try {
         const response = await fetch(`${this.rootApiURL}/api/v0/save`, {
           method: 'POST',
@@ -126,7 +126,7 @@ SOFTWARE.
       }
     }
 
-    async Load(save_slot: string): Promise<void> {
+    async Load(save_slot: number): Promise<void> {
       try {
         const response = await fetch(`${this.rootApiURL}/api/v0/load`, {
           method: 'POST',
@@ -407,7 +407,7 @@ SOFTWARE.
       return OmegaAuthInstance.saveSuccess
     }
     async save_slot({ SLOT, DATA }): Promise<void> {
-      await OmegaAuthInstance.Save(SLOT.toString(), DATA.toString())
+      await OmegaAuthInstance.Save(SLOT, DATA.toString())
     }
     was_load_successful(): boolean {
       return OmegaAuthInstance.loadSuccess
@@ -416,7 +416,7 @@ SOFTWARE.
       return OmegaAuthInstance.loadedData
     }
     async load_slot({ SLOT }): Promise<void> {
-      await OmegaAuthInstance.Load(SLOT.toString())
+      await OmegaAuthInstance.Load(SLOT)
     }
     was_login_successful(): boolean {
       return OmegaAuthInstance.loginSuccess
