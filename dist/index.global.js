@@ -335,7 +335,7 @@
         OmegaAuthInstance.rootWsURL = URL2;
       }
       async login_account({ EMAIL, PASSWORD }) {
-        await OmegaAuthInstance.Login(EMAIL, PASSWORD);
+        await OmegaAuthInstance.Login(EMAIL.toString(), PASSWORD.toString());
       }
       register_status_code() {
         return OmegaAuthInstance.statusCodes.register;
@@ -353,7 +353,7 @@
         return OmegaAuthInstance.saveSuccess;
       }
       async save_slot({ SLOT, DATA }) {
-        await OmegaAuthInstance.Save(SLOT, DATA);
+        await OmegaAuthInstance.Save(SLOT.toString(), DATA.toString());
       }
       was_load_successful() {
         return OmegaAuthInstance.loadSuccess;
@@ -362,13 +362,13 @@
         return OmegaAuthInstance.loadedData;
       }
       async load_slot({ SLOT }) {
-        await OmegaAuthInstance.Load(SLOT);
+        await OmegaAuthInstance.Load(SLOT.toString());
       }
       was_login_successful() {
         return OmegaAuthInstance.loginSuccess;
       }
       async register_account({ EMAIL, USERNAME, PASSWORD }) {
-        await OmegaAuthInstance.Register(EMAIL, USERNAME, PASSWORD);
+        await OmegaAuthInstance.Register(EMAIL.toString(), USERNAME.toString(), PASSWORD.toString());
       }
       was_register_successful() {
         return OmegaAuthInstance.registerSuccess;
@@ -382,7 +382,7 @@
         return url.toString();
       }
       set_ugi({ UGI }) {
-        OmegaAuthInstance.selectedUgi = UGI;
+        OmegaAuthInstance.selectedUgi = UGI.toString();
       }
     }
     if (Scratch2.vm?.runtime) {

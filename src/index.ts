@@ -389,7 +389,7 @@ SOFTWARE.
       OmegaAuthInstance.rootWsURL = URL
     }
     async login_account({ EMAIL, PASSWORD }): Promise<void> {
-      await OmegaAuthInstance.Login(EMAIL, PASSWORD)
+      await OmegaAuthInstance.Login(EMAIL.toString(), PASSWORD.toString())
     }
     register_status_code(): string {
       return OmegaAuthInstance.statusCodes.register
@@ -407,7 +407,7 @@ SOFTWARE.
       return OmegaAuthInstance.saveSuccess
     }
     async save_slot({ SLOT, DATA }): Promise<void> {
-      await OmegaAuthInstance.Save(SLOT, DATA)
+      await OmegaAuthInstance.Save(SLOT.toString(), DATA.toString())
     }
     was_load_successful(): boolean {
       return OmegaAuthInstance.loadSuccess
@@ -416,13 +416,13 @@ SOFTWARE.
       return OmegaAuthInstance.loadedData
     }
     async load_slot({ SLOT }): Promise<void> {
-      await OmegaAuthInstance.Load(SLOT)
+      await OmegaAuthInstance.Load(SLOT.toString())
     }
     was_login_successful(): boolean {
       return OmegaAuthInstance.loginSuccess
     }
     async register_account({ EMAIL, USERNAME, PASSWORD }): Promise<void> {
-      await OmegaAuthInstance.Register(EMAIL, USERNAME, PASSWORD)
+      await OmegaAuthInstance.Register(EMAIL.toString(), USERNAME.toString(), PASSWORD.toString())
     }
     was_register_successful(): boolean {
       return OmegaAuthInstance.registerSuccess
@@ -436,7 +436,7 @@ SOFTWARE.
       return url.toString()
     }
     set_ugi({ UGI }): void {
-      OmegaAuthInstance.selectedUgi = UGI
+      OmegaAuthInstance.selectedUgi = UGI.toString()
     }
   }
   // The following snippet ensures compatibility with Turbowarp/derived mods, as well as Gandi IDE.
