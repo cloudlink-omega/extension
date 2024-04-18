@@ -3,6 +3,9 @@
 # CLΩ API Extension
 🦆👋 This is the API extension for CLΩ.
 
+## 🧑‍💻 Where can I get the latest version?
+[Grab one of these and import it into your Scratch editor.](https://github.com/cloudlink-omega/extension/tree/main/dist)
+
 ## 📝🦆 Documentation
 See the backend Wiki for [API documentation.](https://github.com/cloudlink-omega/backend/wiki/API)
 
