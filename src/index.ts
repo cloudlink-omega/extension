@@ -194,13 +194,10 @@ SOFTWARE.
   // Define the extension for the CLΩ service
   class CloudLinkOmega implements Scratch.Extension {
     // Declare types
-    vm: VM
-    runtime: VM.Runtime
     blockIconURI: string
     menuIconURI: string
 
-    constructor(runtime: VM.Runtime) {
-      this.runtime = runtime
+    constructor() {
 
       // Define icons
       this.blockIconURI =
@@ -443,7 +440,7 @@ SOFTWARE.
   // The following snippet ensures compatibility with Turbowarp/derived mods, as well as Gandi IDE.
   if (Scratch.vm?.runtime) {
     // For Turbowarp/derived mods.
-    Scratch.extensions.register(new CloudLinkOmega(Scratch.runtime))
+    Scratch.extensions.register(new CloudLinkOmega())
   } else {
     // For Gandi
     window.tempExt = {
