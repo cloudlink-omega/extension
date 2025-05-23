@@ -51,35 +51,7 @@ SOFTWARE.
             this.loadedData = "";
         }
 
-        async Login(email, password) {
-            try {
-                const response = await fetch(`${this.rootAuthURL}/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email,
-                        password,
-                    }),
-                });
-
-                const data = await response.text(); // text/plain response. Should be just "OK".
-                if (response.ok) {
-                    console.log("Account logged in successfully.");
-                    this.sessionToken = data;
-
-                } else {
-                    console.warn("Account login failed:", data);
-                }
-                this.loginSuccess = response.ok;
-                this.statusCodes.login = response.status;
-            } catch (error) {
-                console.error('Error getting login token:', error);
-            }
-        }
-
-        async LoginWithTotp(email, password, totp) {
+        async Login(email, password, totp) {
             try {
                 const response = await fetch(`${this.rootAuthURL}/login`, {
                     method: 'POST',
@@ -344,22 +316,7 @@ SOFTWARE.
                     {
                         opcode: 'login_account',
                         blockType: Scratch.BlockType.COMMAND,
-                        text: Scratch.translate('login with email: [EMAIL] password: [PASSWORD]'),
-                        arguments: {
-                            EMAIL: {
-                                type: Scratch.ArgumentType.STRING,
-                                defaultValue: '',
-                            },
-                            PASSWORD: {
-                                type: Scratch.ArgumentType.STRING,
-                                defaultValue: '',
-                            }
-                        }
-                    },
-                    {
-                        opcode: 'login_account_totp',
-                        blockType: Scratch.BlockType.COMMAND,
-                        text: Scratch.translate('login with email: [EMAIL] password: [PASSWORD] and totp: [TOTP]'),
+                        text: Scratch.translate('login with email: [EMAIL] password: [PASSWORD] totp: [TOTP]'),
                         arguments: {
                             EMAIL: {
                                 type: Scratch.ArgumentType.STRING,
@@ -525,11 +482,7 @@ SOFTWARE.
         }
 
         async login_account({ EMAIL, PASSWORD }) {
-            await OmegaAuthInstance.Login(Scratch.Cast.toString(EMAIL), Scratch.Cast.toString(PASSWORD));
-        }
-
-        async login_account_totp({ EMAIL, PASSWORD, TOTP }) {
-            await OmegaAuthInstance.LoginWithTotp(Scratch.Cast.toString(EMAIL), Scratch.Cast.toString(PASSWORD), Scratch.Cast.toString(TOTP));
+            await OmegaAuthInstance.Login(Scratch.Cast.toString(EMAIL), Scratch.Cast.toString(PASSWORD), Scratch.Cast.toString(TOTP));
         }
 
         register_status_code() {
