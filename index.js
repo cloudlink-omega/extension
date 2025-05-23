@@ -220,50 +220,59 @@ SOFTWARE.
                 blocks: [
                     {
                         opcode: 'set_ugi',
-                        blockType: 'command',
-                        text: 'Set [UGI] as this project\'s Unique Game ID (UGI)',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('set [UGI] as this project\'s unique game id (ugi)'),
                         arguments: {
                             UGI: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: '01HNPHRWS0N0AYMM5K4HN31V4W',
                             },
                         }
                     },
+                    "---",
+                    {
+                        blockType: Scratch.BlockType.LABEL,
+                        text: Scratch.translate(`use this block in the cl5`),
+                    },
+                    {
+                        blockType: Scratch.BlockType.LABEL,
+                        text: Scratch.translate(`extension to connect:`),
+                    },
                     {
                         opcode: 'build_server_url',
-                        blockType: 'reporter',
-                        text: 'Signaling Server URL with set UGI',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: Scratch.translate('connection string'),
                     },
                     "---",
                     {
                         opcode: 'change_api_url',
-                        blockType: 'command',
-                        text: 'Use [URL] as API Server',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('use [URL] for api calls'),
                         arguments: {
                             URL: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: 'http://localhost:3000/api/v1',
                             },
                         }
                     },
                     {
                         opcode: 'change_wss_url',
-                        blockType: 'command',
-                        text: 'Use [URL] as Signaling Server',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('use [URL] for game server'),
                         arguments: {
                             URL: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: 'ws://localhost:3000/signaling',
                             },
                         }
                     },
                     {
                         opcode: 'change_auth_url',
-                        blockType: 'command',
-                        text: 'Use [URL] as Authentication Server',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('use [URL] for authentication'),
                         arguments: {
                             URL: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: 'http://localhost:3000/accounts/api/v0',
                             },
                         }
@@ -271,49 +280,49 @@ SOFTWARE.
                     "---",
                     {
                         opcode: 'get_token',
-                        blockType: 'reporter',
-                        text: 'Session Token',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: Scratch.translate('session token'),
                     },
                     {
                         opcode: 'login_status_code',
-                        blockType: 'reporter',
-                        text: 'Login status code',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: Scratch.translate('login status code'),
                     },
                     {
                         opcode: 'was_login_successful',
-                        blockType: 'Boolean',
-                        text: 'Was login successful?',
+                        blockType: Scratch.BlockType.BOOLEAN,
+                        text: Scratch.translate('was login successful?'),
                     },
                     {
                         opcode: 'login_account',
-                        blockType: 'command',
-                        text: 'Login with email: [EMAIL] password: [PASSWORD]',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('login with email: [EMAIL] password: [PASSWORD]'),
                         arguments: {
                             EMAIL: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: '',
                             },
                             PASSWORD: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: '',
                             }
                         }
                     },
                     {
                         opcode: 'login_account_totp',
-                        blockType: 'command',
-                        text: 'Login with email: [EMAIL] password: [PASSWORD] and use [TOTP] as TOTP code',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('login with email: [EMAIL] password: [PASSWORD] and totp: [TOTP]'),
                         arguments: {
                             EMAIL: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: '',
                             },
                             PASSWORD: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: '',
                             },
                             TOTP: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: '',
                             }
                         }
@@ -321,29 +330,29 @@ SOFTWARE.
                     "---",
                     {
                         opcode: 'register_status_code',
-                        blockType: 'reporter',
-                        text: 'Registration status code',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: Scratch.translate('registration status code'),
                     },
                     {
                         opcode: 'was_register_successful',
-                        blockType: 'Boolean',
-                        text: 'Was registration successful?',
+                        blockType: Scratch.BlockType.BOOLEAN,
+                        text: Scratch.translate('was registration successful?'),
                     },
                     {
                         opcode: 'register_account',
-                        blockType: 'command',
-                        text: 'Register with email: [EMAIL] username: [USERNAME] password: [PASSWORD]',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('register with email: [EMAIL] username: [USERNAME] password: [PASSWORD]'),
                         arguments: {
                             EMAIL: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: '',
                             },
                             USERNAME: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: '',
                             },
                             PASSWORD: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: '',
                             }
                         }
@@ -351,26 +360,26 @@ SOFTWARE.
                     "---",
                     {
                         opcode: 'save_status_code',
-                        blockType: 'reporter',
-                        text: 'Save status code',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: Scratch.translate('save status code'),
                     },
                     {
                         opcode: 'was_save_successful',
-                        blockType: 'Boolean',
-                        text: 'Was save successful?',
+                        blockType: Scratch.BlockType.BOOLEAN,
+                        text: Scratch.translate('was save successful?'),
                     },
                     {
                         opcode: 'save_slot',
-                        blockType: 'command',
-                        text: 'Write to save slot [SLOT] with [DATA]',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('write to save slot [SLOT] with [DATA]'),
                         arguments: {
                             SLOT: {
-                                type: 'number',
+                                type: Scratch.ArgumentType.NUMBER,
                                 defaultValue: "1",
                                 menu: "SlotMenu",
                             },
                             DATA: {
-                                type: 'string',
+                                type: Scratch.ArgumentType.STRING,
                                 defaultValue: 'something to save',
                             },
                         }
@@ -378,26 +387,26 @@ SOFTWARE.
                     "---",
                     {
                         opcode: 'load_status_code',
-                        blockType: 'reporter',
-                        text: 'Load status code',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: Scratch.translate('load status code'),
                     },
                     {
                         opcode: 'was_load_successful',
-                        blockType: 'Boolean',
-                        text: 'Was load successful?',
+                        blockType: Scratch.BlockType.BOOLEAN,
+                        text: Scratch.translate('was load successful?'),
                     },
                     {
                         opcode: 'loaded_slot_data',
-                        blockType: 'reporter',
-                        text: 'Loaded save data',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: Scratch.translate('loaded save data'),
                     },
                     {
                         opcode: 'load_slot',
-                        blockType: 'command',
-                        text: 'Read from save slot [SLOT]',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('read from save slot [SLOT]'),
                         arguments: {
                             SLOT: {
-                                type: 'number',
+                                type: Scratch.ArgumentType.NUMBER,
                                 defaultValue: "1",
                                 menu: "SlotMenu",
                             },
