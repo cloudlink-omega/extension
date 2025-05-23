@@ -151,9 +151,8 @@ SOFTWARE.
                 });
 
                 const data = await response.text(); // text/plain response. Should be just "OK".
-                if (data == 'OK') {
+                if (data == 'OK' || data == "OK; Email verification disabled") {
                     console.log("Account registered successfully.");
-                    
                 } else {
                     console.warn("Account registration failed:", data);
                 }
@@ -481,7 +480,7 @@ SOFTWARE.
             OmegaAuthInstance.rootAuthURL = Scratch.Cast.toString(URL);
         }
 
-        async login_account({ EMAIL, PASSWORD }) {
+        async login_account({ EMAIL, PASSWORD, TOTP }) {
             await OmegaAuthInstance.Login(Scratch.Cast.toString(EMAIL), Scratch.Cast.toString(PASSWORD), Scratch.Cast.toString(TOTP));
         }
 
