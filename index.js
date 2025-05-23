@@ -29,8 +29,9 @@ SOFTWARE.
     // Define class for authentication
     class OmegaAuth {
         constructor() {
-            this.rootApiURL = "https://omega.mikedev101.cc";
-            this.rootWsURL = "wss://omega.mikedev101.cc";
+            this.rootApiURL = "http://localhost:3000/api/v1";
+            this.rootWsURL = "ws://localhost:3000/signaling";
+            this.rootAuthURL = "http://localhost:3000/accounts/api/v0"
             this.selectedUgi = "01HNPHRWS0N0AYMM5K4HN31V4W"; // Default UGI
             this.registerSuccess = false;
             this.loginSuccess = false;
@@ -48,7 +49,7 @@ SOFTWARE.
 
         async Login(email, password) {
             try {
-                const response = await fetch(`${this.rootApiURL}/api/v0/login`, {
+                const response = await fetch(`${this.rootAuthURL}/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -74,9 +75,38 @@ SOFTWARE.
             }
         }
 
+        async LoginWithTotp(email, password, totp) {
+            try {
+                const response = await fetch(`${this.rootAuthURL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        totp
+                    }),
+                });
+
+                const data = await response.text(); // text/plain response. Should be just "OK".
+                if (response.ok) {
+                    console.log("Account logged in successfully.");
+                    this.sessionToken = data;
+
+                } else {
+                    console.warn("Account login failed:", data);
+                }
+                this.loginSuccess = response.ok;
+                this.statusCodes.login = response.status;
+            } catch (error) {
+                console.error('Error getting login token:', error);
+            }
+        }
+
         async Save(save_slot, save_data) {
             try {
-                const response = await fetch(`${this.rootApiURL}/api/v0/save`, {
+                const response = await fetch(`${this.rootApiURL}/save`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -104,7 +134,7 @@ SOFTWARE.
 
         async Load(save_slot) {
             try {
-                const response = await fetch(`${this.rootApiURL}/api/v0/load`, {
+                const response = await fetch(`${this.rootApiURL}/load`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -132,7 +162,7 @@ SOFTWARE.
 
         async Register(email, username, password) {
             try {
-                const response = await fetch(`${this.rootApiURL}/api/v0/register`, {
+                const response = await fetch(`${this.rootAuthURL}/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -212,7 +242,7 @@ SOFTWARE.
                         arguments: {
                             URL: {
                                 type: 'string',
-                                defaultValue: 'https://omega.mikedev101.cc',
+                                defaultValue: 'http://localhost:3000/api/v1',
                             },
                         }
                     },
@@ -223,7 +253,18 @@ SOFTWARE.
                         arguments: {
                             URL: {
                                 type: 'string',
-                                defaultValue: 'wss://omega.mikedev101.cc',
+                                defaultValue: 'ws://localhost:3000/signaling',
+                            },
+                        }
+                    },
+                    {
+                        opcode: 'change_auth_url',
+                        blockType: 'command',
+                        text: 'Use [URL] as Authentication Server',
+                        arguments: {
+                            URL: {
+                                type: 'string',
+                                defaultValue: 'http://localhost:3000/accounts/api/v0',
                             },
                         }
                     },
@@ -253,6 +294,25 @@ SOFTWARE.
                                 defaultValue: '',
                             },
                             PASSWORD: {
+                                type: 'string',
+                                defaultValue: '',
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'login_account_totp',
+                        blockType: 'command',
+                        text: 'Login with email: [EMAIL] password: [PASSWORD] and use [TOTP] as TOTP code',
+                        arguments: {
+                            EMAIL: {
+                                type: 'string',
+                                defaultValue: '',
+                            },
+                            PASSWORD: {
+                                type: 'string',
+                                defaultValue: '',
+                            },
+                            TOTP: {
                                 type: 'string',
                                 defaultValue: '',
                             }
@@ -354,15 +414,23 @@ SOFTWARE.
         }
 
         change_api_url({ URL }) {
-            OmegaAuthInstance.rootApiURL = URL;
+            OmegaAuthInstance.rootApiURL = Scratch.Cast.toString(URL);
         }
 
         change_wss_url({ URL }) {
-            OmegaAuthInstance.rootWsURL = URL;
+            OmegaAuthInstance.rootWsURL = Scratch.Cast.toString(URL);
+        }
+
+        change_auth_url({ URL }) {
+            OmegaAuthInstance.rootAuthURL = Scratch.Cast.toString(URL);
         }
 
         async login_account({ EMAIL, PASSWORD }) {
-            await OmegaAuthInstance.Login(EMAIL, PASSWORD);
+            await OmegaAuthInstance.Login(Scratch.Cast.toString(EMAIL), Scratch.Cast.toString(PASSWORD));
+        }
+
+        async login_account_totp({ EMAIL, PASSWORD, TOTP }) {
+            await OmegaAuthInstance.LoginWithTotp(Scratch.Cast.toString(EMAIL), Scratch.Cast.toString(PASSWORD), Scratch.Cast.toString(TOTP));
         }
 
         register_status_code() {
@@ -386,7 +454,7 @@ SOFTWARE.
         }
 
         async save_slot({ SLOT, DATA }) {
-            await OmegaAuthInstance.Save(SLOT, DATA);
+            await OmegaAuthInstance.Save(Scratch.Cast.toNumber(SLOT), Scratch.Cast.toString(DATA));
         }
 
         was_load_successful() {
@@ -406,7 +474,7 @@ SOFTWARE.
         }
 
         async register_account({ EMAIL, USERNAME, PASSWORD }) {
-            await OmegaAuthInstance.Register(EMAIL, USERNAME, PASSWORD);
+            await OmegaAuthInstance.Register(Scratch.Cast.toString(EMAIL), Scratch.Cast.toString(USERNAME), Scratch.Cast.toString(PASSWORD));
             return OmegaAuthInstance.registerSuccess;
         }
 
@@ -419,13 +487,13 @@ SOFTWARE.
         }
 
         build_server_url() {
-            let url = new URL(`${OmegaAuthInstance.rootWsURL}/api/v0/signaling`);
+            let url = new URL(OmegaAuthInstance.rootWsURL);
             url.searchParams.append('ugi', OmegaAuthInstance.selectedUgi);
             return url.toString();
         }
 
         set_ugi({UGI}) {
-            OmegaAuthInstance.selectedUgi = UGI;
+            OmegaAuthInstance.selectedUgi = Scratch.Cast.toString(UGI);
         }
     }
 
