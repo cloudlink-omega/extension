@@ -37,12 +37,16 @@ SOFTWARE.
             this.loginSuccess = false;
             this.saveSuccess = false;
             this.loadSuccess = false;
+            this.verifySuccess = false;
+            this.resendSuccess = false;
             this.sessionToken = new String();
             this.statusCodes = {
                 register: "",
                 login: "",
                 load: "",
                 save: "",
+                verify: "",
+                resend: ""
             }
             this.loadedData = "";
         }
@@ -188,6 +192,60 @@ SOFTWARE.
                 this.registerSuccess = false;
             }
         }
+
+        async Verify(code) {
+            try {
+                const response = await fetch(`${this.rootAuthURL}/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: this.sessionToken,
+                        code,
+                    }),
+                });
+
+                const data = await response.text(); // text/plain response. Should be just "OK".
+                if (data == 'OK') {
+                    console.log("Email verified successfully.");
+                    
+                } else {
+                    console.warn("Email verification failed:", data);
+                }
+                this.verifySuccess = (data == 'OK');
+                this.statusCodes.verify = response.status;
+            } catch (error) {
+                console.error('Error getting response:', error);
+                this.verifySuccess = false;
+            }
+        }
+
+        async ResendVerify() {
+            try {
+                const response = await fetch(`${this.rootAuthURL}/resend-verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: this.sessionToken,
+                    }),
+                });
+                const data = await response.text(); // text/plain response. Should be just "OK".
+                if (data == 'OK') {
+                    console.log("Resent email verification successfully.");
+                    
+                } else {
+                    console.warn("Resend email verification failed:", data);
+                }
+                this.resendSuccess = (data == 'OK');
+                this.statusCodes.resend = response.status;
+            } catch (error) {
+                console.error('Error getting response:', error);
+                this.resendSuccess = false;
+            }
+        }
     }
 
     // Initialize class for the extension
@@ -221,7 +279,7 @@ SOFTWARE.
                     {
                         opcode: 'set_ugi',
                         blockType: Scratch.BlockType.COMMAND,
-                        text: Scratch.translate('set [UGI] as this project\'s unique game id (ugi)'),
+                        text: Scratch.translate('set [UGI] as unique game id (ugi)'),
                         arguments: {
                             UGI: {
                                 type: Scratch.ArgumentType.STRING,
@@ -229,21 +287,6 @@ SOFTWARE.
                             },
                         }
                     },
-                    "---",
-                    {
-                        blockType: Scratch.BlockType.LABEL,
-                        text: Scratch.translate(`use this block in the cl5`),
-                    },
-                    {
-                        blockType: Scratch.BlockType.LABEL,
-                        text: Scratch.translate(`extension to connect:`),
-                    },
-                    {
-                        opcode: 'build_server_url',
-                        blockType: Scratch.BlockType.REPORTER,
-                        text: Scratch.translate('connection string'),
-                    },
-                    "---",
                     {
                         opcode: 'change_api_url',
                         blockType: Scratch.BlockType.COMMAND,
@@ -276,6 +319,11 @@ SOFTWARE.
                                 defaultValue: 'http://localhost:3000/accounts/api/v0',
                             },
                         }
+                    },
+                    {
+                        opcode: 'build_server_url',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: Scratch.translate('connection string'),
                     },
                     "---",
                     {
@@ -356,6 +404,48 @@ SOFTWARE.
                                 defaultValue: '',
                             }
                         }
+                    },
+                    "---",
+                    {
+                        blockType: Scratch.BlockType.LABEL,
+                        text: Scratch.translate(`Login first before verifying your email.`),
+                    },
+                    {
+                        opcode: 'verify_status_code',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: Scratch.translate('email verify status code'),
+                    },
+                    {
+                        opcode: 'was_verify_successful',
+                        blockType: Scratch.BlockType.BOOLEAN,
+                        text: Scratch.translate('was email verification successful?'),
+                    },
+                    {
+                        opcode: 'verify_account',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('verify email with code: [CODE]'),
+                        arguments: {
+                            CODE: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: '',
+                            }
+                        }
+                    },
+                    "---",
+                    {
+                        opcode: 'resend_status_code',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: Scratch.translate('resend email verify status code'),
+                    },
+                    {
+                        opcode: 'was_resend_successful',
+                        blockType: Scratch.BlockType.BOOLEAN,
+                        text: Scratch.translate('was resending email verification successful?'),
+                    },
+                    {
+                        opcode: 'resend_verify',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('resend email verify code'),
                     },
                     "---",
                     {
@@ -493,6 +583,30 @@ SOFTWARE.
 
         get_token() {
             return OmegaAuthInstance.sessionToken;
+        }
+
+        async verify_account({ CODE }) {
+           await OmegaAuthInstance.Verify(Scratch.Cast.toString(CODE));
+        }
+
+        resend_status_code() {
+            return OmegaAuthInstance.statusCodes.resend;
+        }
+
+        was_resend_successful() {
+            return OmegaAuthInstance.resendSuccess;
+        }
+
+        async resend_verify() {
+            await OmegaAuthInstance.ResendVerify();
+        }
+
+        verify_status_code() {
+            return OmegaAuthInstance.statusCodes.verify;
+        }
+
+        was_verify_successful() {
+            return OmegaAuthInstance.verifySuccess;
         }
 
         build_server_url() {
