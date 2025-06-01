@@ -29,9 +29,9 @@ SOFTWARE.
     // Define class for authentication
     class OmegaAuth {
         constructor() {
-            this.rootApiURL = "http://localhost:3000/api/v1";
-            this.rootWsURL = "ws://localhost:3000/signaling";
-            this.rootAuthURL = "http://localhost:3000/accounts/api/v0"
+            this.rootApiURL = "https://omega.mikedev101.cc/api/v1";
+            this.rootWsURL = "wss://omega.mikedev101.cc/signaling";
+            this.rootAuthURL = "https://omega.mikedev101.cc/accounts/api/v0"
             this.selectedUgi = "01HNPHRWS0N0AYMM5K4HN31V4W"; // Default UGI
             this.registerSuccess = false;
             this.loginSuccess = false;
@@ -266,7 +266,7 @@ SOFTWARE.
                         arguments: {
                             URL: {
                                 type: Scratch.ArgumentType.STRING,
-                                defaultValue: 'http://localhost:3000/api/v1',
+                                defaultValue: 'https://omega.mikedev101.cc/api/v1',
                             },
                         }
                     },
@@ -277,7 +277,7 @@ SOFTWARE.
                         arguments: {
                             URL: {
                                 type: Scratch.ArgumentType.STRING,
-                                defaultValue: 'ws://localhost:3000/signaling',
+                                defaultValue: 'wss://omega.mikedev101.cc/signaling',
                             },
                         }
                     },
@@ -288,7 +288,7 @@ SOFTWARE.
                         arguments: {
                             URL: {
                                 type: Scratch.ArgumentType.STRING,
-                                defaultValue: 'http://localhost:3000/accounts/api/v0',
+                                defaultValue: 'https://omega.mikedev101.cc/accounts/api/v0',
                             },
                         }
                     },
