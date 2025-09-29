@@ -80,6 +80,40 @@ SOFTWARE.
             }
         }
 
+        async GuestLogin(username) {
+            if (username == "") {
+                console.warn("Guest login failed: No username provided.");
+                this.loginSuccess = false;
+                this.statusCodes.login = "400";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${this.rootAuthURL}/guest-login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username,
+                    }),
+                });
+
+                const data = await response.text(); // text/plain response. Should be just "OK".
+                if (response.ok) {
+                    console.log("Account guest logged in successfully.");
+                    this.sessionToken = data;
+
+                } else {
+                    console.warn("Account guest login failed:", data);
+                }
+                this.loginSuccess = response.ok;
+                this.statusCodes.login = response.status;
+            } catch (error) {
+                console.error('Error getting guest login token:', error);
+            }
+        }
+
         async Save(save_slot, save_data) {
             try {
                 const response = await fetch(`${this.rootApiURL}/save`, {
@@ -314,6 +348,17 @@ SOFTWARE.
                         text: Scratch.translate('was login successful?'),
                     },
                     {
+                        opcode: 'guest_login',
+                        blockType: Scratch.BlockType.COMMAND,
+                        text: Scratch.translate('login as guest with username: [USERNAME]'),
+                        arguments: {
+                            USERNAME: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: '',
+                            },
+                        }
+                    },
+                    {
                         opcode: 'login_account',
                         blockType: Scratch.BlockType.COMMAND,
                         text: Scratch.translate('login with email: [EMAIL] password: [PASSWORD] totp: [TOTP]'),
@@ -483,6 +528,10 @@ SOFTWARE.
 
         async login_account({ EMAIL, PASSWORD, TOTP }) {
             await OmegaAuthInstance.Login(Scratch.Cast.toString(EMAIL), Scratch.Cast.toString(PASSWORD), Scratch.Cast.toString(TOTP));
+        }
+
+        async guest_login({ USERNAME }) {
+            await OmegaAuthInstance.GuestLogin(Scratch.Cast.toString(USERNAME));
         }
 
         register_status_code() {
