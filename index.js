@@ -29,7 +29,7 @@ SOFTWARE.
     // Define class for authentication
     class OmegaAuth {
         constructor() {
-            this.rootApiURL = "https://omega.mikedev101.cc/api/v1";
+            this.rootApiURL = "https://omega.mikedev101.cc/api/v0";
             this.rootWsURL = "wss://omega.mikedev101.cc/signaling";
             this.rootAuthURL = "https://omega.mikedev101.cc/accounts/api/v0"
             this.selectedUgi = "01HNPHRWS0N0AYMM5K4HN31V4W"; // Default UGI
